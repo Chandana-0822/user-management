@@ -1,0 +1,269 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+      "title": "User Management API",
+      "description": "A simple API to manage users, supporting CRUD operations.",
+      "version": "1.0.0"
+    },
+    "servers": [
+      {
+        "url": "http://localhost:8080",
+        "description": "Local development server"
+      }
+    ],
+    "paths": {
+      "/users": {
+        "get": {
+          "summary": "Get all users",
+          "description": "Retrieve a list of all users.",
+          "responses": {
+            "200": {
+              "description": "A JSON array of users",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/components/schemas/User"
+                    }
+                  }
+                }
+              }
+            },
+            "500": {
+              "description": "Server error"
+            }
+          }
+        },
+        "post": {
+          "summary": "Create a new user",
+          "description": "Add a new user to the database.",
+          "requestBody": {
+            "required": true,
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/User"
+                }
+              }
+            }
+          },
+          "responses": {
+            "201": {
+              "description": "User created successfully",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/User"
+                  }
+                }
+              }
+            },
+            "400": {
+              "description": "Invalid input"
+            },
+            "500": {
+              "description": "Server error"
+            }
+          }
+        },
+        "put": {
+          "summary": "Update a user",
+          "description": "Update a user's details.",
+          "parameters": [
+            {
+              "name": "id",
+              "in": "path",
+              "required": true,
+              "description": "The ID of the user",
+              "schema": {
+                "type": "integer"
+              }
+            }
+          ],
+          "requestBody": {
+            "required": true,
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/User"
+                }
+              }
+            }
+          },
+          "responses": {
+            "200": {
+              "description": "User updated successfully",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/User"
+                  }
+                }
+              }
+            },
+            "400": {
+              "description": "Invalid input"
+            },
+            "404": {
+              "description": "User not found"
+            },
+            "500": {
+              "description": "Server error"
+            }
+          }
+        },
+        "delete": {
+          "summary": "Delete a user",
+          "description": "Remove a user from the database.",
+          "parameters": [
+            {
+              "name": "id",
+              "in": "path",
+              "required": true,
+              "description": "The ID of the user",
+              "schema": {
+                "type": "integer"
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "User deleted successfully"
+            },
+            "404": {
+              "description": "User not found"
+            },
+            "500": {
+              "description": "Server error"
+            }
+          }
+        }
+      },
+      "/users/search": {
+        "post": {
+          "summary": "Search username and generate suggestions",
+          "description": "Checks if a username exists and provides available username suggestions based on first name and last name.",
+          "requestBody": {
+            "required": true,
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SearchUsernameRequest"
+                }
+              }
+            }
+          },
+          "responses": {
+            "200": {
+              "description": "Success response",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/SearchUsernameResponse"
+                  }
+                }
+              }
+            },
+            "400": {
+              "description": "Invalid input"
+            },
+            "500": {
+              "description": "Server error"
+            }
+          }
+        }
+      }
+    },
+    "components": {
+      "schemas": {
+        "User": {
+          "type": "object",
+          "properties": {
+            "user_id": {
+              "type": "integer",
+              "description": "The ID of the user",
+              "example": 1
+            },
+            "user_name": {
+              "type": "string",
+              "description": "The username of the user",
+              "example": "TestUser123"
+            },
+            "first_name": {
+              "type": "string",
+              "description": "The first name of the user",
+              "example": "Test"
+            },
+            "last_name": {
+              "type": "string",
+              "description": "The last name of the user",
+              "example": "User123"
+            },
+            "email": {
+              "type": "string",
+              "description": "The email address of the user",
+              "example": "testuser123@example.com"
+            },
+            "user_status": {
+              "type": "string",
+              "description": "The status of the user (A = Active, I = Inactive, T = Terminated)",
+              "example": "A"
+            },
+            "department": {
+              "type": "string",
+              "description": "The department the user belongs to",
+              "example": "Engineering"
+            }
+          }
+        },
+        "SearchUsernameRequest": {
+          "type": "object",
+          "required": [
+            "username",
+            "first_name",
+            "last_name"
+          ],
+          "properties": {
+            "username": {
+              "type": "string",
+              "description": "The username to check for availability",
+              "example": "testuser1"
+            },
+            "first_name": {
+              "type": "string",
+              "description": "The first name of the user",
+              "example": "Test"
+            },
+            "last_name": {
+              "type": "string",
+              "description": "The last name of the user",
+              "example": "User1"
+            }
+          }
+        },
+        "SearchUsernameResponse": {
+          "type": "object",
+          "properties": {
+            "message": {
+              "type": "string",
+              "description": "Error message if username already exists or Username is available to use",
+              "example": "Username already exists or Username Available to Use"
+            },
+            "suggestions": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "description": "Suggested usernames",
+              "example": [
+                "test.user123",
+                "test_user",
+                "testuser123"
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
